@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kml.Converter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Paychex, Inc.")]
+[assembly: AssemblyCompany("michael@mckechney.com")]
 [assembly: AssemblyProduct("Kml.Converter")]
-[assembly: AssemblyCopyright("Copyright © Paychex, Inc. 2014")]
+[assembly: AssemblyCopyright("Copyright © Michael McKechney 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
