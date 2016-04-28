@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 namespace Kml.Converter
 {
@@ -29,12 +27,6 @@ namespace Kml.Converter
 
             kmlFileName = kmlFileName.Replace("/","-").Replace(":",".");
             doc.AppendChild(name);
-
-            //List<XmlElement> styles = CreateStyles(ref kmlDoc);
-            //foreach(var x in styles)
-            //{
-            //    kml.AppendChild(x);
-            //}
 
             foreach (var point in torqueData)
             {
