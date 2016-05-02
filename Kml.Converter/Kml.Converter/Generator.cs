@@ -6,17 +6,17 @@ namespace Kml.Converter
 {
     class Generator
     {
-        private static decimal lastHeading = 0.0M;
-        private static decimal lastInvertedHeading = 0.0M;
-        private static int pointCounter = 0;
+        private static decimal _lastHeading = 0.0M;
+        private static decimal _lastInvertedHeading = 0.0M;
+        private static int _pointCounter = 0;
         public Generator()
         {
         }
 
-        internal XmlDocument GenerateKmlFile(List<Dictionary<string,string>> torqueData, out string kmlFileName)
+        internal XmlDocument GenerateKmlFile(List<Dictionary<string, string>> torqueData, out string kmlFileName)
         {
             XmlDocument kmlDoc = new XmlDocument();
-        
+
             XmlElement kml = kmlDoc.CreateElement(KmlElementTypes.Kml);
             kml.SetAttribute("xmlns", KmlElementTypes.XmlNamespace);
 
@@ -25,21 +25,21 @@ namespace Kml.Converter
             XmlElement name = kmlDoc.CreateElement(KmlElementTypes.Name);
             name.InnerText = ExtractTripName(torqueData, out kmlFileName);
 
-            kmlFileName = kmlFileName.Replace("/","-").Replace(":",".");
+            kmlFileName = kmlFileName.Replace("/", "-").Replace(":", ".");
             doc.AppendChild(name);
 
             foreach (var point in torqueData)
             {
                 XmlElement tmp = CreatePoint(point, ref kmlDoc);
-                if(tmp != null)
+                if (tmp != null)
                     doc.AppendChild(tmp);
             }
-            
+
             kml.AppendChild(doc);
             kmlDoc.AppendChild(kml);
 
-            lastHeading = 0.0M;
-            pointCounter = 0;
+            _lastHeading = 0.0M;
+            _pointCounter = 0;
 
             return kmlDoc;
 
@@ -57,7 +57,7 @@ namespace Kml.Converter
                 string mphLabel = mph.ToString() + " mph";
                 pointData.Add("MPH", mph.ToString());
 
-                if (pointCounter % 10 == 0)
+                if (_pointCounter % 10 == 0)
                 {
                     name.InnerText = DateTime.Parse(pointData[TorqueKnownTypes.DeviceTime]).ToString("hh:mm:ss tt");
                 }
@@ -66,14 +66,14 @@ namespace Kml.Converter
                 XmlElement heading = kmlDoc.CreateElement(KmlElementTypes.Heading);
                 if (mph > 2)
                 {
-                    lastHeading = decimal.Parse(pointData[TorqueKnownTypes.Bearing]);
-                    lastInvertedHeading = InverseBearing(lastHeading);
-                    heading.InnerText = lastInvertedHeading.ToString();
+                    _lastHeading = decimal.Parse(pointData[TorqueKnownTypes.Bearing]);
+                    _lastInvertedHeading = InverseBearing(_lastHeading);
+                    heading.InnerText = _lastInvertedHeading.ToString();
                 }
                 else
                 {
-                    heading.InnerText = lastInvertedHeading.ToString();
-                    pointData[TorqueKnownTypes.Bearing] = lastHeading.ToString();
+                    heading.InnerText = _lastInvertedHeading.ToString();
+                    pointData[TorqueKnownTypes.Bearing] = _lastHeading.ToString();
                 }
 
                 //Set Coordinates
@@ -84,7 +84,7 @@ namespace Kml.Converter
                 icon.InnerText = KmlElementTypes.ArrowIcon;
 
                 XmlElement style = kmlDoc.CreateElement(KmlElementTypes.Style);
-                
+
 
                 XmlElement color = kmlDoc.CreateElement(KmlElementTypes.Color);
                 if (mph == 0)
@@ -93,16 +93,16 @@ namespace Kml.Converter
                     color.InnerText = SpeedColors.Crawl;
                 else if (mph >= 10 && mph < 30)
                     color.InnerText = SpeedColors.Slow;
-                else if (mph >=30 && mph < 45)
+                else if (mph >= 30 && mph < 45)
                     color.InnerText = SpeedColors.Medium;
                 else if (mph >= 45 && mph < 55)
                     color.InnerText = SpeedColors.Fast;
                 else if (mph >= 55)
                     color.InnerText = SpeedColors.Highway;
-                else 
+                else
                     color.InnerText = "cc00ff00";
 
-                XmlElement labelStyle= kmlDoc.CreateElement("LabelStyle");
+                XmlElement labelStyle = kmlDoc.CreateElement("LabelStyle");
                 XmlElement labelScale = kmlDoc.CreateElement("scale");
                 labelScale.InnerText = ".75";
                 labelStyle.AppendChild(labelScale);
@@ -113,12 +113,12 @@ namespace Kml.Converter
                 XmlCDataSection cData = kmlDoc.CreateCDataSection(supportingData);
                 description.AppendChild(cData);
 
-                
+
                 XmlElement iconStyle = kmlDoc.CreateElement(KmlElementTypes.IconStyle);
                 XmlElement point = kmlDoc.CreateElement(KmlElementTypes.Point);
 
                 //Put it all together...
-                
+
                 iconStyle.AppendChild(icon);
                 iconStyle.AppendChild(color);
                 iconStyle.AppendChild(heading);
@@ -132,7 +132,7 @@ namespace Kml.Converter
                 placemark.AppendChild(description);
                 placemark.AppendChild(point);
 
-                pointCounter++;
+                _pointCounter++;
                 return placemark;
             }
             catch (Exception exe)
@@ -153,7 +153,7 @@ namespace Kml.Converter
             var support = pointData;
 
             var enumer = support.GetEnumerator();
-            while(enumer.MoveNext())
+            while (enumer.MoveNext())
             {
                 sb.AppendFormat("<b>{0}</b>:&nbsp;{1}<br/>", enumer.Current.Key, enumer.Current.Value);
             }
@@ -162,11 +162,8 @@ namespace Kml.Converter
 
         private string ExtractTripName(List<Dictionary<string, string>> torqueData, out string fileName)
         {
-            DateTime start;
-            DateTime end;
-
-            start = DateTime.Parse(torqueData[0][TorqueKnownTypes.DeviceTime]);
-            end = DateTime.Parse(torqueData[torqueData.Count - 1][TorqueKnownTypes.DeviceTime]);
+            var start = DateTime.Parse(torqueData[0][TorqueKnownTypes.DeviceTime]);
+            var end = DateTime.Parse(torqueData[torqueData.Count - 1][TorqueKnownTypes.DeviceTime]);
 
             fileName = string.Format("{0} {1} {2} {3} to {4}", start.ToString("yyyy-MM-dd"), start.DayOfWeek, start.ToString("tt"), start.ToString("hh.mm"), end.ToString("hh.mm"));
             return string.Format("{0} {1} {2} {3} to {4}", start.DayOfWeek, start.ToString("tt"), start.ToString("yyyy-MM-dd"), start.ToString("hh.mm"), end.ToString("hh.mm"));
@@ -175,7 +172,7 @@ namespace Kml.Converter
 
         private List<XmlElement> CreateStyles(ref XmlDocument kmlDoc)
         {
-            string labelScale = ".75";
+            const string labelScale = ".75";
 
             List<XmlElement> lstStyles = new List<XmlElement>();
 
@@ -289,9 +286,9 @@ namespace Kml.Converter
 
             return lstStyles;
         }
-        private decimal InverseBearing(decimal bearing)
+        private static decimal InverseBearing(decimal bearing)
         {
-            bearing = Math.Round(bearing,0) + 180;
+            bearing = Math.Round(bearing, 0) + 180;
             return bearing < 360 ? bearing : bearing - 360;
 
         }
