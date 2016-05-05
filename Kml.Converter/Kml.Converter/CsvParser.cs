@@ -26,8 +26,8 @@ namespace Kml.Converter
 
         private List<Dictionary<string, string>> PrepareTypeData(List<string> headers, List<string[]> values)
         {
-            List<Dictionary<string, string>> typeData = new List<Dictionary<string,string>>();
-            foreach(string[] value in values)
+            List<Dictionary<string, string>> typeData = new List<Dictionary<string, string>>();
+            foreach (string[] value in values)
             {
                 Dictionary<string, string> set = new Dictionary<string, string>();
                 for (int i = 0; i < headers.Count(); i++)
@@ -35,7 +35,8 @@ namespace Kml.Converter
                     try
                     {
                         set.Add(headers[i], value[i]);
-                    }catch(Exception exe)
+                    }
+                    catch 
                     { }
                 }
                 typeData.Add(set);

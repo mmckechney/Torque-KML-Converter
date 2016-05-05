@@ -1,6 +1,6 @@
 ﻿namespace Kml.Converter
 {
-    class SpeedStyles
+    internal class SpeedStyles
     {
         internal static string Stopped = "stoppedStyle";
         internal static string Crawl = "crawlStyle";

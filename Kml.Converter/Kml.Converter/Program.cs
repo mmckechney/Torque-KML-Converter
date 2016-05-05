@@ -6,12 +6,12 @@ namespace Kml.Converter
 {
     class Program
     {
-        private static Generator gen;
-        private static CsvParser csv;
+        private static Generator _gen;
+        private static CsvParser _csv;
         static void Main(string[] args)
         {
-            gen = new Generator();
-            csv = new CsvParser();
+            _gen = new Generator();
+            _csv = new CsvParser();
 
             if (args.Length == 1)
             {
@@ -19,12 +19,12 @@ namespace Kml.Converter
                 Process(csvFileName);
             }
 
-            if(args.Length == 2)
+            if (args.Length == 2)
             {
-                if(args[0].Trim().ToLower() == "/dir")
+                if (args[0].Trim().ToLower() == "/dir")
                 {
                     var files = Directory.GetFiles(args[1], "*.csv");
-                    foreach(var file in files)
+                    foreach (var file in files)
                     {
                         Process(file);
                     }
@@ -40,15 +40,15 @@ namespace Kml.Converter
                 }
 
             }
-            
+
         }
 
 
         private static void Process(string csvFileName)
         {
-            var data = csv.ParseFile(csvFileName);
+            var data = _csv.ParseFile(csvFileName);
             string kmlFileName;
-            XmlDocument kml = gen.GenerateKmlFile(data, out kmlFileName);
+            XmlDocument kml = _gen.GenerateKmlFile(data, out kmlFileName);
 
             string filename = Path.GetDirectoryName(csvFileName) + "\\" + kmlFileName + ".kml"; // Path.GetFileNameWithoutExtension(csvFileName) + ".kml";
             kml.Save(filename);
@@ -56,10 +56,10 @@ namespace Kml.Converter
         private static void Process(List<List<Dictionary<string, string>>> data, string folder)
         {
             if (!folder.EndsWith("\\")) folder = folder + "\\";
-            string kmlFileName;
             foreach (var dataItem in data)
             {
-                XmlDocument kml = gen.GenerateKmlFile(dataItem, out kmlFileName);
+                string kmlFileName;
+                XmlDocument kml = _gen.GenerateKmlFile(dataItem, out kmlFileName);
 
                 string filename = folder + kmlFileName + ".kml"; // Path.GetFileNameWithoutExtension(csvFileName) + ".kml";
                 kml.Save(filename);

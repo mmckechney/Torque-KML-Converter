@@ -3,7 +3,7 @@ namespace Kml.Converter
 {
     internal class SpeedColors
     {
-        internal static string Stopped =  ConvertColorToHex(Color.White);
+        internal static string Stopped = ConvertColorToHex(Color.White);
         internal static string Crawl = ConvertColorToHex(Color.LightBlue); //"ccFF6600"; //
         internal static string Slow = ConvertColorToHex(Color.Yellow); //"ccFFCC00"; //
         internal static string Medium = ConvertColorToHex(Color.PeachPuff); //"ccCCFFBB"; //
